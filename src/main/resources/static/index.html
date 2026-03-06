@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="startPolling()">REST polling</button>
+<button onclick="startWS()">WebSocket</button>
+
+<div id="result"></div>
+
+<script>
+
+    function startPolling(){
+
+        fetch("/start");
+
+        let interval = setInterval(async () => {
+
+            let r = await fetch("/status");
+            let text = await r.text();
+
+            if(text === "done"){
+                document.getElementById("result").innerText = "done";
+                clearInterval(interval);
+            }
+
+        },500);
+    }
+
+    function startWS(){
+
+        let ws = new WebSocket("ws://localhost:8080/ws");
+
+        ws.onmessage = (e)=>{
+            document.getElementById("result").innerText = e.data;
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
